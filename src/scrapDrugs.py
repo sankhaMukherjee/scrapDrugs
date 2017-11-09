@@ -21,13 +21,19 @@ def main(logger):
     # -----------------------------------
     
 
-    results = wC.downloadURLsimple('https://www.drugs.com/abilify.html')
-    results = results.decode("utf-8") 
-    dictRes = dr.drugOverview(results)
+    # This is used for testing simple urls
+    # ------------------------------------
+    # results = wC.downloadURLsimple('https://www.drugs.com/abilify.html')
+    # results = results.decode("utf-8") 
+    # dictRes = dr.drugOverview(results)
     # for s in results.split('\n'):
     #     print(s)
+    # print(dictRes)
+    
+    # This uses webdrivers
+    # ------------------------------------
+    wC.downloadURLselenium('https://www.drugs.com/abilify.html')
 
-    print(dictRes)
 
     return
 

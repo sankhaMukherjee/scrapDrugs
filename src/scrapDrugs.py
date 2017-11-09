@@ -1,5 +1,9 @@
 from logs import logDecorator as lD
 from lib import simpleLib as sL
+from lib import webContent as wC
+
+from lib.decoders import drugs as dr
+
 import json
 
 config = json.load(open('../config/config.json'))
@@ -17,20 +21,13 @@ def main(logger):
     # -----------------------------------
     
 
-    sampleValues = [
-        (1, 2),
-        (1.2, 5),
-        (3, 'a'),
-        ('First', 'Second'),
-        (55,)
-    ]
+    results = wC.downloadURLsimple('https://www.drugs.com/abilify.html')
+    results = results.decode("utf-8") 
+    dictRes = dr.drugOverview(results)
+    # for s in results.split('\n'):
+    #     print(s)
 
-    for s in sampleValues:
-        try:
-            sL.simpleTestFunction(*s)
-        except Exception as e:
-            logger.error('Unable to perform addition with values [{}]\n:{}'.format(
-                s, str(e)))
+    print(dictRes)
 
     return
 

@@ -2,5 +2,7 @@
     "logging":{
         "logFolder":"logs",
         "logBase":"userSummary"
-    }
+    },
+    "verbose": true,
+    "webpageLoadTime": 3
 }

@@ -32,9 +32,7 @@ def main(logger):
     
     # This uses webdrivers
     # ------------------------------------
-    wC.downloadURLselenium('https://www.drugs.com/abilify.html')
-
-
+    dr.drugInfo('https://www.drugs.com/abilify.html')
     return
 
 if __name__ == '__main__':

@@ -41,6 +41,10 @@
   <h1>Source code for scrapDrugs</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">logs</span> <span class="k">import</span> <span class="n">logDecorator</span> <span class="k">as</span> <span class="n">lD</span>
 <span class="kn">from</span> <span class="nn">lib</span> <span class="k">import</span> <span class="n">simpleLib</span> <span class="k">as</span> <span class="n">sL</span>
+<span class="kn">from</span> <span class="nn">lib</span> <span class="k">import</span> <span class="n">webContent</span> <span class="k">as</span> <span class="n">wC</span>
+
+<span class="kn">from</span> <span class="nn">lib.decoders</span> <span class="k">import</span> <span class="n">drugs</span> <span class="k">as</span> <span class="n">dr</span>
+
 <span class="kn">import</span> <span class="nn">json</span>
 
 <span class="n">config</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;../config/config.json&#39;</span><span class="p">))</span>
@@ -58,22 +62,18 @@
     <span class="c1"># -----------------------------------</span>
     
 
-    <span class="n">sampleValues</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
-        <span class="p">(</span><span class="mf">1.2</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
-        <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s1">&#39;First&#39;</span><span class="p">,</span> <span class="s1">&#39;Second&#39;</span><span class="p">),</span>
-        <span class="p">(</span><span class="mi">55</span><span class="p">,)</span>
-    <span class="p">]</span>
-
-    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sampleValues</span><span class="p">:</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">sL</span><span class="o">.</span><span class="n">simpleTestFunction</span><span class="p">(</span><span class="o">*</span><span class="n">s</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Unable to perform addition with values [</span><span class="si">{}</span><span class="s1">]</span><span class="se">\n</span><span class="s1">:</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">s</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
-
-
+    <span class="c1"># This is used for testing simple urls</span>
+    <span class="c1"># ------------------------------------</span>
+    <span class="c1"># results = wC.downloadURLsimple(&#39;https://www.drugs.com/abilify.html&#39;)</span>
+    <span class="c1"># results = results.decode(&quot;utf-8&quot;) </span>
+    <span class="c1"># dictRes = dr.drugOverview(results)</span>
+    <span class="c1"># for s in results.split(&#39;\n&#39;):</span>
+    <span class="c1">#     print(s)</span>
+    <span class="c1"># print(dictRes)</span>
+    
+    <span class="c1"># This uses webdrivers</span>
+    <span class="c1"># ------------------------------------</span>
+    <span class="n">dr</span><span class="o">.</span><span class="n">drugInfo</span><span class="p">(</span><span class="s1">&#39;https://www.drugs.com/abilify.html&#39;</span><span class="p">)</span>
     <span class="k">return</span></div>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>

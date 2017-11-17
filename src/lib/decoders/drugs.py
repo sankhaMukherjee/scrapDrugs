@@ -17,6 +17,76 @@ from selenium.webdriver.support    import expected_conditions as EC
 config = json.load(open('../config/config.json'))
 logBase = config['logging']['logBase'] + '.lib.decoders.drugs'
 
+@lD.log(logBase + '.getDrugList')
+def getDrugList(logger, html):
+    '''get a list of medications
+    
+    This function parses information  about the list  of drugs available for a
+    particular type  of condition. Examples of  a particular condition page is
+    given by the folliwing webpage:
+
+    https://www.drugs.com/condition/depression.html
+
+    This page  contains a  list of medications,  and possible similar pages on
+    breadcrumbs. This function is  going to  parse the table that contains the
+    different medications and then  returns a  list  of these  medications and
+    their respective pages so that they can then be subsequently scrapped.
+    
+    Parameters
+    ----------
+    logger : {logging.logger}
+        logger for logging information
+    html : {str}
+        html to be parsed
+
+    Returns 
+    ------- 
+        list List of dicts. Each dict contains information about whether it is
+        a drug, or whether it is a reference to a list for the next page. This
+        can later be used for crawling to the next page.
+
+    '''
+
+    result = {
+        'medNames': {},
+        'nextLink': None
+    }
+
+    # 1. Find the Drug list
+    try:
+        soup = BeautifulSoup(html, 'html.parser')
+        meds = soup.find_all('tr', class_='condition-table__summary')
+        for m in meds:
+            info = m.find_all('td')
+            for i in info:
+                if 'condition-table__drug-name' not in str(i):
+                    continue
+
+                medName = i.text.replace('Off Label', '').strip()
+                medLink = ''
+
+                for link in i.find_all('a'):
+                    medLink = link['href']
+
+                result['medNames'][medName] = medLink
+
+    except Exception as e:
+        logger.error('Unable to find the required med names from html:')
+        logger.error('<======>\n{}\n<======>'.format(html))
+        return result
+
+    #. 2. Now find the link to the next page
+    try:
+        nextLink = soup.find_all('td', class_='paging-list-next')
+        link = nextLink[0].find_all('a')[0]['href']
+        result['nextLink'] = link
+    except Exception as e:
+        logger.error('Unable to get the link for the next page ...')
+
+
+
+    return result
+
 @lD.log(logBase + '.drugOverview')
 def drugOverview(logger, html):
     '''retrieve an overview of the drug
@@ -57,11 +127,10 @@ def drugOverview(logger, html):
 def drugInfo(logger, url, VERBOSE=None):
     '''retrieve an overview of the drug
     
-    This function does the job of going to a particular
-    website, and downloading information from the website
-    directly. This function is useful wheh the page is not
-    static, and information is retrieved through some form
-    of JS before displaying that to the webpage.
+    This function  does  the  job  of  going  to  a  particular  website,  and
+    downloading information from the website directly. This function is useful
+    wheh the page is not static, and information  is  retrieved  through  some
+    form of JS before displaying that to the webpage.
 
     Parsing website - https://drugs.com
     
@@ -180,7 +249,5 @@ def drugInfo(logger, url, VERBOSE=None):
         logger.warning('Unable to get to the dosage tab ...')
 
     driver.close()
-
-    print(result)
 
     return result

@@ -23,8 +23,24 @@ def main(logger):
 
     # This is used for testing simple urls
     # ------------------------------------
-    # results = wC.downloadURLsimple('https://www.drugs.com/abilify.html')
-    # results = results.decode("utf-8") 
+    url = 'https://www.drugs.com/condition/depression.html'
+    while True:
+
+        results = wC.downloadURLsimple(url)
+        results = results.decode("utf-8") 
+        drugList = dr.getDrugList(results)
+
+        print('-'*30)
+        for k in drugList['medNames']:
+            print('{:30} -> {}'.format(k, drugList['medNames'][k]))
+        
+        if drugList['nextLink'] is not None:
+            url = 'https://www.drugs.com' + drugList['nextLink']
+        else:
+            break
+
+
+
     # dictRes = dr.drugOverview(results)
     # for s in results.split('\n'):
     #     print(s)
@@ -32,7 +48,7 @@ def main(logger):
     
     # This uses webdrivers
     # ------------------------------------
-    dr.drugInfo('https://www.drugs.com/abilify.html')
+    # dr.drugInfo('https://www.drugs.com/abilify.html')
     return
 
 if __name__ == '__main__':

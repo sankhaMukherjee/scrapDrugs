@@ -14,8 +14,54 @@ from selenium.webdriver.common.by  import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support    import expected_conditions as EC
 
+from lib import webContent as wC
+
 config = json.load(open('../config/config.json'))
 logBase = config['logging']['logBase'] + '.lib.decoders.drugs'
+
+@lD.log(logBase + '.getAllDrugs')
+def getAllDrugs(logger, initUrl):
+    '''[summary]
+    
+    [description]
+    
+    Parameters
+    ----------
+    logger : {[type]}
+        [description]
+    initUrl : {[type]}
+        [description]
+    
+    Returns
+    -------
+    [type]
+        [description]
+    '''
+
+    allDrugs = {}
+
+    try:
+        url = initUrl
+        while True:
+
+            results = wC.downloadURLsimple(url)
+            results = results.decode("utf-8") 
+            drugList = getDrugList(results)
+
+            for k in drugList['medNames']:
+                allDrugs[k.lower()] = drugList['medNames'][k]
+            
+            if drugList['nextLink'] is not None:
+                url = 'https://www.drugs.com' + drugList['nextLink']
+            else:
+                break
+
+    except Exception as e:
+        logger.error('Unable to get the drug list for the url: {}'.format(initUrl))
+        logger.error('The current it is trying to process is: {}'.format(url))
+        logger.error(str(e))
+
+    return allDrugs
 
 @lD.log(logBase + '.getDrugList')
 def getDrugList(logger, html):
@@ -62,7 +108,10 @@ def getDrugList(logger, html):
                 if 'condition-table__drug-name' not in str(i):
                     continue
 
-                medName = i.text.replace('Off Label', '').strip()
+                medName = i.text.strip()
+                if 'Off Label' in medName: 
+                    medName = medName.replace('Off Label', '').strip()
+
                 medLink = ''
 
                 for link in i.find_all('a'):

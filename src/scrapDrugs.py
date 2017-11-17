@@ -24,20 +24,10 @@ def main(logger):
     # This is used for testing simple urls
     # ------------------------------------
     url = 'https://www.drugs.com/condition/depression.html'
-    while True:
+    allDrugs = dr.getAllDrugs(url)
 
-        results = wC.downloadURLsimple(url)
-        results = results.decode("utf-8") 
-        drugList = dr.getDrugList(results)
-
-        print('-'*30)
-        for k in drugList['medNames']:
-            print('{:30} -> {}'.format(k, drugList['medNames'][k]))
-        
-        if drugList['nextLink'] is not None:
-            url = 'https://www.drugs.com' + drugList['nextLink']
-        else:
-            break
+    for k in sorted(allDrugs.keys()):
+        print('{:>30s} -> {}'.format(k, allDrugs[k]))
 
 
 
